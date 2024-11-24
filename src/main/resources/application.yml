@@ -2,6 +2,11 @@ spring:
   application:
     name: security
 
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
   datasource:
     url: jdbc:mariadb://localhost:3305/assignment
     username: root

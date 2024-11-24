@@ -1,8 +1,8 @@
-package com.penta.security.aop;
+package com.penta.security.user.aop;
 
-import com.penta.security.dto.response.SystemUserResponseDto;
-import com.penta.security.entity.UserHistory;
-import com.penta.security.repository.UserHistoryRepository;
+import com.penta.security.user.dto.response.SystemUserResponseDto;
+import com.penta.security.user.entity.UserHistory;
+import com.penta.security.user.repository.UserHistoryRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class UserHistoryLoggingAspect {
     private final UserHistoryRepository userHistoryRepository;
     private final HttpServletRequest request; // 클라이언트 요청 정보를 주입
 
-    @Around("execution(* com.penta.security.service.SystemUserService.*(..))")
+    @Around("execution(* com.penta.security.user.service.SystemUserService.*(..))")
     @Transactional
     public Object logUserHistory(ProceedingJoinPoint joinPoint) throws Throwable {
         // 메서드 이름과 매개변수를 추출
@@ -61,8 +61,7 @@ public class UserHistoryLoggingAspect {
     private String getApiUrl(String methodName, Object[] args) {
         return switch (methodName) {
             case "create" -> "/api/users";
-            case "update" -> args.length > 0 ? "/api/users/" + args[0] : null;
-            case "delete" -> args.length > 0 ? "/api/users/" + args[0] : null;
+            case "update", "delete" -> args.length > 0 ? "/api/users?userId=" + args[0] : null;
             default -> null;
         };
     }

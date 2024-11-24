@@ -1,4 +1,4 @@
-package com.penta.security.dto.request;
+package com.penta.security.user.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

@@ -1,13 +1,14 @@
-package com.penta.security.controller;
+package com.penta.security.user.controller;
 
-import com.penta.security.dto.request.SystemUserCreateRequestDto;
-import com.penta.security.dto.request.SystemUserUpdateRequestDto;
-import com.penta.security.dto.response.SystemUserResponseDto;
-import com.penta.security.service.SystemUserService;
+import com.penta.security.user.dto.request.SystemUserCreateRequestDto;
+import com.penta.security.user.dto.request.SystemUserUpdateRequestDto;
+import com.penta.security.user.dto.response.SystemUserResponseDto;
+import com.penta.security.user.service.SystemUserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class UserController {
 
     private final SystemUserService systemUserService;
 
+    @Secured("SYSTEM_ADMIN")
     @GetMapping
     public ResponseEntity<List<SystemUserResponseDto>> getUsers(
         @RequestParam(required = false) String userId,
@@ -41,15 +43,18 @@ public class UserController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<SystemUserResponseDto> update(@PathVariable String userId,
+    @Secured("SYSTEM_ADMIN")
+    @PutMapping
+    public ResponseEntity<SystemUserResponseDto> update(
+        @RequestParam String userId,
         @RequestBody @Valid SystemUserUpdateRequestDto requestDto) {
         SystemUserResponseDto responseDto = systemUserService.update(userId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<SystemUserResponseDto> delete(@PathVariable String userId) {
+    @Secured("SYSTEM_ADMIN")
+    @DeleteMapping
+    public ResponseEntity<SystemUserResponseDto> delete(@RequestParam String userId) {
         SystemUserResponseDto responseDto = systemUserService.delete(userId);
         return ResponseEntity.ok(responseDto);
     }

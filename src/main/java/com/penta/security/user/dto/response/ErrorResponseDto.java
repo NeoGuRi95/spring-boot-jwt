@@ -1,4 +1,4 @@
-package com.penta.security.dto.response;
+package com.penta.security.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
-package com.penta.security.dto.response;
+package com.penta.security.user.dto.response;
 
-import com.penta.security.entity.SystemUser;
+import com.penta.security.user.entity.SystemUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +12,6 @@ public class SystemUserResponseDto {
 
     private String userId;
 
-    private String userPw;
-
     private String userNm;
 
     private String userAuth;
@@ -21,7 +19,6 @@ public class SystemUserResponseDto {
     public SystemUserResponseDto(SystemUser systemUser) {
         this.userIdx = systemUser.getUserIdx();
         this.userId = systemUser.getUserId();
-        this.userPw = systemUser.getUserPw();
         this.userNm = systemUser.getUserNm();
         this.userAuth = systemUser.getUserAuth();
     }

@@ -1,7 +1,7 @@
 package com.penta.security.auth.config;
 
-import com.penta.security.auth.CustomUserDetailsService;
-import com.penta.security.jwt.JwtProvider;
+import com.penta.security.auth.service.CustomUserDetailsService;
+import com.penta.security.auth.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +32,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
             // JWT 유효성 검증
             if (jwtProvider.validateToken(token)) {
-                String userId = jwtProvider.getUsernameFromToken(token);
-
+                String userId = jwtProvider.getUserIdFromToken(token);
+                // DB에 해당 아이디를 가진 유저가 있는지 확인
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
 
                 if (userDetails != null) {

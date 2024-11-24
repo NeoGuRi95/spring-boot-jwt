@@ -1,6 +1,6 @@
-package com.penta.security.repository;
+package com.penta.security.user.repository;
 
-import com.penta.security.entity.SystemUser;
+import com.penta.security.user.entity.SystemUser;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

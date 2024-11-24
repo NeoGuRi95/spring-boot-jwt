@@ -1,4 +1,4 @@
-package com.penta.security.entity;
+package com.penta.security.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

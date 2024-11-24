@@ -1,7 +1,7 @@
 package com.penta.security.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.penta.security.dto.response.ErrorResponseDto;
+import com.penta.security.user.dto.response.ErrorResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

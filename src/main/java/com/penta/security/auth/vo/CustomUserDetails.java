@@ -1,6 +1,6 @@
-package com.penta.security.auth;
+package com.penta.security.auth.vo;
 
-import com.penta.security.entity.SystemUser;
+import com.penta.security.user.entity.SystemUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,12 +15,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final SystemUser member;
+    private final SystemUser systemUser;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = new ArrayList<>();
-        roles.add(member.getUserAuth());
+        roles.add(systemUser.getUserAuth());
 
 
         return roles.stream()
@@ -30,12 +30,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getUserPw();
+        return systemUser.getUserPw();
     }
 
     @Override
     public String getUsername() {
-        return member.getUserId();
+        return systemUser.getUserId();
     }
 
 

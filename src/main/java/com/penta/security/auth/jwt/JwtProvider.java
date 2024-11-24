@@ -1,4 +1,4 @@
-package com.penta.security.jwt;
+package com.penta.security.auth.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -20,10 +20,12 @@ import java.util.function.Function;
 @Slf4j
 public class JwtProvider {
 
-    // jwt 만료 시간 1시간
-    private static final long JWT_TOKEN_VALID = (long) 1000 * 60 * 30;
+    // Access Token 만료 시간 1시간
+    private static final long ACCESS_TOKEN_VALID_TIME = (long) 1000 * 60 * 60;
+    // Refresh Token 만료 시간 24시간
+    private static final long REFRESH_TOKEN_VALID_TIME = (long) 1000 * 60 * 60 * 24;
 
-    @Value("${jwt.secret}")
+    @Value("${spring.jwt.secret}")
     private String secret;
 
     private SecretKey key;
@@ -39,8 +41,18 @@ public class JwtProvider {
      * @param token JWT
      * @return token Username
      */
-    public String getUsernameFromToken(final String token) {
+    public String getUserIdFromToken(final String token) {
         return getClaimFromToken(token, Claims::getId);
+    }
+
+    /**
+     * 토큰 만료 일자 조회
+     *
+     * @param token JWT
+     * @return 만료 일자
+     */
+    public Date getExpirationDateFromToken(final String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
     }
 
     /**
@@ -69,103 +81,39 @@ public class JwtProvider {
      * @return All Claims
      */
     private Claims getAllClaimsFromToken(final String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
+        return Jwts.parser()
+            .verifyWith(key)
             .build()
-            .parseClaimsJws(token)
-            .getBody();
-    }
-
-    /**
-     * 토큰 만료 일자 조회
-     *
-     * @param token JWT
-     * @return 만료 일자
-     */
-    public Date getExpirationDateFromToken(final String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
-
-    /**
-     * access token 생성
-     *
-     * @param id token 생성 id
-     * @return access token
-     */
-    public String generateAccessToken(final String id) {
-        return generateAccessToken(id, new HashMap<>());
-    }
-
-    /**
-     * access token 생성
-     *
-     * @param id token 생성 id
-     * @return access token
-     */
-    public String generateAccessToken(final long id) {
-        return generateAccessToken(String.valueOf(id), new HashMap<>());
-    }
-
-    /**
-     * access token 생성
-     *
-     * @param id     token 생성 id
-     * @param claims token 생성 claims
-     * @return access token
-     */
-    public String generateAccessToken(final String id, final Map<String, Object> claims) {
-        return doGenerateAccessToken(id, claims);
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     /**
      * JWT access token 생성
      *
-     * @param id     token 생성 id
-     * @param claims token 생성 claims
+     * @param userId token 생성 userId
      * @return access token
      */
-    private String doGenerateAccessToken(final String id, final Map<String, Object> claims) {
+    public String generateAccessToken(final String userId) {
         return Jwts.builder()
-            .setClaims(claims)
-            .setId(id)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALID)) // 30분
+            .id(userId)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_TIME)) // 1시간
             .signWith(key)
             .compact();
     }
 
     /**
-     * refresh token 생성
+     * JWT refresh token 생성
      *
-     * @param id token 생성 id
+     * @param userId refresh token 생성 userId
      * @return refresh token
      */
-    public String generateRefreshToken(final String id) {
-        return doGenerateRefreshToken(id);
-    }
-
-    /**
-     * refresh token 생성
-     *
-     * @param id token 생성 id
-     * @return refresh token
-     */
-    public String generateRefreshToken(final long id) {
-        return doGenerateRefreshToken(String.valueOf(id));
-    }
-
-    /**
-     * refresh token 생성
-     *
-     * @param id token 생성 id
-     * @return refresh token
-     */
-    private String doGenerateRefreshToken(final String id) {
+    public String generateRefreshToken(final String userId) {
         return Jwts.builder()
-            .setId(id)
-            .setExpiration(
-                new Date(System.currentTimeMillis() + (JWT_TOKEN_VALID * 2) * 24)) // 24시간
-            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .id(userId)
+            .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_TIME)) // 24시간
+            .issuedAt(new Date(System.currentTimeMillis()))
             .signWith(key)
             .compact();
     }
@@ -178,10 +126,10 @@ public class JwtProvider {
      */
     public Boolean validateToken(final String token) {
         try {
-            Jwts.parserBuilder()
-                .setSigningKey(key)
+            Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token);
+                .parseSignedClaims(token);
             return true;
         } catch (SecurityException e) {
             log.warn("Invalid JWT signature: {}", e.getMessage());
