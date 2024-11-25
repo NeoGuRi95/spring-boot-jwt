@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.penta.security.user.dto.response.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /*
-* 사용자가 인증되지 않았거나 유효한 인증정보를 가지고 있지 않은 경우 동작
-* */
+ * 사용자가 인증되지 않았거나 유효한 인증정보를 가지고 있지 않은 경우 동작
+ * */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
         log.info("[CustomAuthenticationEntryPointHandler] :: 토근 정보가 만료되었거나 존재하지 않음");
 
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(),
-            authException.getMessage());
+            authException.getMessage(), LocalDateTime.now());
 
         String responseBody = objectMapper.writeValueAsString(errorResponseDto);
         response.setContentType("application/json; charset=UTF-8");
